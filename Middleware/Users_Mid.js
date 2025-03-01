@@ -1,11 +1,11 @@
-// Middleware/Users_Mid.js
+const { addSlashes, stripSlashes } = require('slashes');
 
 async function AddUser(req, res, next) {
-    let user_name = req.body.name;
-    const Query = `INSERT INTO users (name) VALUES('${user_name}')`;
+    let user_name = addSlashes(req.body.name);
+    const Query = `INSERT INTO users (name) VALUES(?)`;
     const promisePool = global.db_pool.promise();
     try {
-        const [rows] = await promisePool.query(Query);
+        const [rows] = await promisePool.execute(Query, [user_name]);
         req.success = true;
         req.insertId = rows.insertId;
     } catch (err) {
@@ -19,12 +19,9 @@ async function ReadUsers(req, res, next) {
     const Query = `SELECT * FROM users`;
     const promisePool = global.db_pool.promise();
     try {
-        const [rows] = await promisePool.query(Query);
-        // Ensure safe HTML output
-        for (let idx in rows) {
-            rows[idx].name = htmlspecialchars(rows[idx].name);
-        }
+        const [rows] = await promisePool.execute(Query);
         req.success = true;
+        // Removed htmlspecialchars – if you need to sanitize, do it here or on the client side.
         req.users_data = rows;
     } catch (err) {
         console.error(err);
@@ -34,11 +31,12 @@ async function ReadUsers(req, res, next) {
 }
 
 async function UpdateUser(req, res, next) {
-    const { id, name } = req.body;
-    const Query = `UPDATE users SET name='${name}' WHERE id=${id}`;
+    let id   = parseInt(req.body.id);
+    let name = addSlashes(req.body.name);
+    const Query = `UPDATE users SET name = ? WHERE id = ?`;
     const promisePool = global.db_pool.promise();
     try {
-        await promisePool.query(Query);
+        await promisePool.execute(Query, [name, id]);
         req.success = true;
     } catch (err) {
         console.error(err);
@@ -48,11 +46,11 @@ async function UpdateUser(req, res, next) {
 }
 
 async function DeleteUser(req, res, next) {
-    const { id } = req.body;
-    const Query = `DELETE FROM users WHERE id=${id}`;
+    let id = parseInt(req.body.id);
+    const Query = `DELETE FROM users WHERE id = ?`;
     const promisePool = global.db_pool.promise();
     try {
-        await promisePool.query(Query);
+        await promisePool.execute(Query, [id]);
         req.success = true;
     } catch (err) {
         console.error(err);
