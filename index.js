@@ -20,10 +20,19 @@ app.set('views', path.join(__dirname, '/views'));
 global.htmlspecialchars = require('htmlspecialchars');
 const { addSlashes, stripSlashes } = require('slashes');
 
+//--- Routers ---
+const Users_R = require('./Routers/Users_R');
+app.use('/users', Users_R);
+
+const Measurements_R = require('./Routers/Measurements_R');
+app.use('/measurements', Measurements_R);
+
+const Summary_R = require('./Routers/Summary_R');
+app.use('/summary', Summary_R);
 
 
 //
-app.listen(port, () => {            
+app.listen(port, () => {
     console.log(`Now listening on port http://localhost:${port}`);
 
 });
