@@ -165,4 +165,23 @@ document.addEventListener('DOMContentLoaded', () => {
         table.appendChild(tbody);
         container.appendChild(table);
     }
+// פונקציה לאכלס את תפריטי המשתמש הנפתחים מהשרת
+    async function populateUsers(selectId) {
+        try {
+            const response = await fetch('/users/list');
+            const result = await response.json();
+            const select = document.getElementById(selectId);
+            // If the endpoint returns an object with a "data" field or an array directly:
+            const users = result.data || result;
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.text = user.name;
+                select.appendChild(option);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
+});
 
