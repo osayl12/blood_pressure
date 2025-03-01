@@ -4,6 +4,11 @@ const express = require('express');
 const app = express();
 app.use(express.json());
 
+//swagger
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swaggerConfig');
+// Serve Swagger docs at /api-docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 const bodyParser = require('body-parser');
@@ -36,5 +41,6 @@ app.use('/summary', Summary_R);
 //
 app.listen(port, () => {
     console.log(`Now listening on port http://localhost:${port}`);
+    console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
 
 });
