@@ -21,7 +21,6 @@ async function ReadUsers(req, res, next) {
     try {
         const [rows] = await promisePool.execute(Query);
         req.success = true;
-        // Removed htmlspecialchars – if you need to sanitize, do it here or on the client side.
         req.users_data = rows;
     } catch (err) {
         console.error(err);
