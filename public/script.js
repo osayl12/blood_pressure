@@ -116,3 +116,53 @@ document.addEventListener('DOMContentLoaded', () => {
         table.appendChild(tbody);
         container.appendChild(table);
     }
+
+    //טופס סיכום חודשי
+    const summaryForm = document.getElementById('summaryForm');
+    summaryForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const month = document.getElementById('monthInput').value;
+
+        try {
+            const response = await fetch(`/summary/monthly?month=${month}`);
+            const result = await response.json();
+            displaySummary(result);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('summaryResult').innerText = 'Error fetching summary.';
+        }
+    });
+
+    function displaySummary(data) {
+        const container = document.getElementById('summaryResult');
+        container.innerHTML = '';
+        if (!data.data || data.data.length === 0) {
+            container.innerText = 'No summary data available for the selected month.';
+            return;
+        }
+
+        const table = document.createElement('table');
+        const thead = document.createElement('thead');
+        thead.innerHTML = `<tr>
+            <th>User</th>
+            <th>Avg Systolic</th>
+            <th>Avg Diastolic</th>
+            <th>Avg Pulse</th>
+            <th>Abnormal Count</th>
+        </tr>`;
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        data.data.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${item.user}</td>
+                            <td>${item.avgSystolic !== null ? item.avgSystolic.toFixed(2) : 'N/A'}</td>
+                            <td>${item.avgDiastolic !== null ? item.avgDiastolic.toFixed(2) : 'N/A'}</td>
+                            <td>${item.avgPulse !== null ? item.avgPulse.toFixed(2) : 'N/A'}</td>
+                            <td>${item.abnormalCount}</td>`;
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        container.appendChild(table);
+    }
+
