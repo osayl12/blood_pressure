@@ -26,6 +26,8 @@ app.use(express.static('public'));
 
 global.htmlspecialchars = require('htmlspecialchars');
 const { addSlashes, stripSlashes } = require('slashes');
+global.addSlashes = addSlashes;
+global.stripSlashes = stripSlashes;
 
 //--- Routers ---
 const Users_R = require('./Routers/Users_R');
