@@ -1,5 +1,3 @@
-const { addSlashes, stripSlashes } = require('slashes');
-
 async function AddUser(req, res, next) {
     let user_name = addSlashes(req.body.name);
     const Query = `INSERT INTO users (name) VALUES(?)`;
