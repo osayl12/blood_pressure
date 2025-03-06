@@ -171,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/users/list');
             const result = await response.json();
             const select = document.getElementById(selectId);
-            // If the endpoint returns an object with a "data" field or an array directly:
             const users = result.data || result;
             users.forEach(user => {
                 const option = document.createElement('option');
