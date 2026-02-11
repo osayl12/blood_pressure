@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const userMid = require("../Middleware/Users_Mid");
 
@@ -35,11 +35,11 @@ const userMid = require("../Middleware/Users_Mid");
  *         description: Error creating user
  */
 router.post("/create", [userMid.AddUser], (req, res) => {
-    if (req.success) {
-        res.status(200).json({ msg: "ok", Last_Id: req.insertId });
-    } else {
-        return res.status(500).json({ message: "Error creating user" });
-    }
+  if (req.success) {
+    res.status(200).json({ msg: "ok", Last_Id: req.insertId });
+  } else {
+    return res.status(500).json({ message: "Error creating user" });
+  }
 });
 
 /**
@@ -66,14 +66,14 @@ router.post("/create", [userMid.AddUser], (req, res) => {
  *         description: Error retrieving users
  */
 router.get("/list", [userMid.ReadUsers], (req, res) => {
-    if (req.success) {
-        res.status(200).json({
-            msg  : "ok",
-            data : req.users_data,
-        });
-    } else {
-        return res.status(500).json({ message: "Error retrieving users" });
-    }
+  if (req.success) {
+    res.status(200).json({
+      msg: "ok",
+      data: req.users_data,
+    });
+  } else {
+    return res.status(500).json({ message: "Error retrieving users" });
+  }
 });
 
 /**
@@ -103,11 +103,11 @@ router.get("/list", [userMid.ReadUsers], (req, res) => {
  *         description: Error updating user
  */
 router.put("/update", [userMid.UpdateUser], (req, res) => {
-    if (req.success) {
-        res.status(200).json({ msg: "ok" });
-    } else {
-        return res.status(500).json({ message: "Error updating user" });
-    }
+  if (req.success) {
+    res.status(200).json({ msg: "ok" });
+  } else {
+    return res.status(500).json({ message: "Error updating user" });
+  }
 });
 
 /**
@@ -134,11 +134,11 @@ router.put("/update", [userMid.UpdateUser], (req, res) => {
  *         description: Error deleting user
  */
 router.delete("/delete", [userMid.DeleteUser], (req, res) => {
-    if (req.success) {
-        res.status(200).json({ msg: "ok" });
-    } else {
-        return res.status(500).json({ message: "Error deleting user" });
-    }
+  if (req.success) {
+    res.status(200).json({ msg: "ok" });
+  } else {
+    return res.status(500).json({ message: "Error deleting user" });
+  }
 });
 
 module.exports = router;
