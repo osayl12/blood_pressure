@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const summaryMid = require("../Middleware/Summary_Mid");
 
@@ -44,11 +44,11 @@ const summaryMid = require("../Middleware/Summary_Mid");
  *         description: Error retrieving summary
  */
 router.get("/monthly", [summaryMid.GetMonthlySummary], (req, res) => {
-    if (req.success) {
-        res.status(200).json({ msg: "ok", data: req.summary });
-    } else {
-        return res.status(500).json({ message: "Error retrieving summary" });
-    }
+  if (req.success) {
+    res.status(200).json({ msg: "ok", data: req.summary });
+  } else {
+    return res.status(500).json({ message: "Error retrieving summary" });
+  }
 });
 
 module.exports = router;
