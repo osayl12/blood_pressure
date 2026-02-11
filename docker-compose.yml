@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: blood_pressure_app
+    ports:
+      - "7291:7291"
+    depends_on:
+      - db
+    environment:
+      HOST: db
+      USER: root
+      PASSWORD: root
+      DATABASE: blood_pressure_tracker
+    restart: always
+
+  db:
+    image: mysql:8
+    container_name: blood_pressure_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: blood_pressure_tracker
+    volumes:
+      - ./db/blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
