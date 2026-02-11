@@ -1,0 +1,56 @@
+name: CI-CD Blood Pressure
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  build_push_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 3️⃣ Run tests (if exist)
+      - name: Run tests (if any)
+        run: npm test --if-present
+
+      # 4️⃣ Login to DockerHub
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 5️⃣ Setup Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 6️⃣ Build and Push image
+      - name: Build & Push Docker Image
+        run: |
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/blood_pressure:latest"
+          docker buildx build \
+            --platform linux/amd64 \
+            -t "$IMAGE" \
+            --push .
+
+      # 7️⃣ Deploy to Oracle
+      - name: Deploy on Oracle via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd ~/blood_pressure
+            docker compose pull
+            docker compose up -d
+            docker image prune -f
