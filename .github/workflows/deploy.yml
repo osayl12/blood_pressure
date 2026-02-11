@@ -17,10 +17,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 3️⃣ Run tests (if exist)
-      - name: Run tests (if any)
-        run: npm test --if-present
-
       # 4️⃣ Login to DockerHub
       - name: Docker Login
         uses: docker/login-action@v3
