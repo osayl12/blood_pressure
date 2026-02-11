@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   app:
+    image: osayl1997/blood_pressure:latest
     build: .
     container_name: blood_pressure_app
     ports:
