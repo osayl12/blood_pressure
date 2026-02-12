@@ -38,7 +38,7 @@ const Summary_R = require("./Routers/Summary_R");
 app.use("/summary", Summary_R);
 
 //
-app.listen(port, () => {
+app.listen(port,"0.0.0.0", () => {
   console.log(`Now listening on port http://localhost:${port}`);
   console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
 });
