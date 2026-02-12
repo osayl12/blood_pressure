@@ -33,7 +33,7 @@ jobs:
         run: |
           IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/blood_pressure:latest"
           docker buildx build \
-            --platform linux/amd64 \
+            --platform linux/amd64,linux/arm64 \
             -t "$IMAGE" \
             --push .
 
