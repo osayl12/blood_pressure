@@ -1,4 +1,4 @@
-name: PressureCheck CI/CD
+name: PressureCheck CI
 
 on:
   push:
@@ -6,12 +6,23 @@ on:
       - master
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
 
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -25,15 +36,3 @@ jobs:
           context: .
           push: true
           tags: osayl1997/pressurecheck:latest
-
-      - name: Deploy to Server
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd /var/www/pressurecheck
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
