@@ -1,31 +1,30 @@
 version: '3.8'
 
 services:
-  app:
-    image: osayl1997/blood_pressure:latest
-    build: .
-    container_name: blood_pressure_app
-    ports:
-      - "7291:7291"
-    depends_on:
-      - db
-    environment:
-      HOST: db
-      USER: root
-      PASSWORD: root
-      DATABASE: blood_pressure_tracker
-    restart: always
-
-  db:
-    image: mysql:8
-    container_name: blood_pressure_db
+  mysql:
+    image: mysql:8.0
+    container_name: pressure-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: blood_pressure_tracker
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3307:3306"
     volumes:
-      - ./db/blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
-      - mysql_data:/var/lib/mysql
+      - ./blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
 
-volumes:
-  mysql_data:
+  node:
+    image: osayl1997/pressurecheck:latest
+    container_name: pressure-node
+    restart: always
+    ports:
+      - "8082:7291"
+    environment:
+      DB_HOST: mysql
+      DB_USER: appuser
+      DB_PASSWORD: apppassword
+      DB_NAME: blood_pressure_tracker
+    depends_on:
+      - mysql
