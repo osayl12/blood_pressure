@@ -20,6 +20,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /var/www/pressurecheck
-            docker-compose pull
-            docker-compose down
-            docker-compose up -d
+            docker compose down
+            docker compose pull
+            docker compose up -d
