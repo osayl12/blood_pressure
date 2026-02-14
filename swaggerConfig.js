@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:7291",
+        url: process.env.SWAGGER_SERVER || "http://localhost:7291",
       },
     ],
   },

@@ -1,6 +1,23 @@
 async function AddMeasurement(req, res, next) {
   const { userId, systolic, diastolic, pulse, measurementDate } = req.body;
 
+  if (
+    !userId ||
+    isNaN(userId) ||
+    !systolic ||
+    !diastolic ||
+    !pulse ||
+    !measurementDate
+  ) {
+    req.success = false;
+    return next();
+  }
+
+  if (systolic <= 0 || diastolic <= 0 || pulse <= 0) {
+    req.success = false;
+    return next();
+  }
+
   const Query = `
     INSERT INTO measurements (user_id, systolic, diastolic, pulse, measurement_date)
     VALUES (?, ?, ?, ?, ?)
@@ -27,6 +44,11 @@ async function AddMeasurement(req, res, next) {
 async function ReadMeasurements(req, res, next) {
   const userId = Number(req.params.userId);
   const { start, end } = req.query;
+
+  if (!userId || !start || !end) {
+    req.success = false;
+    return next();
+  }
 
   const Query = `
     SELECT *

@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:
@@ -6,10 +6,10 @@ services:
     container_name: pressure-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: blood_pressure_tracker
-      MYSQL_USER: appuser
-      MYSQL_PASSWORD: apppassword
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_USER}
     ports:
       - "3307:3306"
     volumes:
@@ -26,5 +26,6 @@ services:
       DB_USER: appuser
       DB_PASSWORD: apppassword
       DB_NAME: blood_pressure_tracker
+      SWAGGER_SERVER: http://localhost:8082
     depends_on:
       - mysql

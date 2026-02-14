@@ -1,89 +1,155 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
+  background: #f4f7fb;
+  color: #333;
 }
 
+/* ===== HEADER ===== */
 header {
-  background-color: #072b50;
+  background: linear-gradient(90deg, #072b50, #0d4c8b);
   color: white;
-  padding: 20px;
+  padding: 25px;
   text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
+header h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+/* ===== NAVIGATION ===== */
 nav ul {
   list-style: none;
   padding: 0;
   display: flex;
   justify-content: center;
-}
-
-nav ul li {
-  margin: 0 15px;
+  gap: 25px;
+  margin-top: 15px;
 }
 
 nav ul li a {
   color: white;
   text-decoration: none;
-  font-weight: bold;
+  font-weight: 600;
+  transition: 0.3s ease;
 }
 
+nav ul li a:hover {
+  color: #ffd700;
+}
+
+/* ===== MAIN CONTAINER ===== */
 main {
-  padding: 20px;
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
 }
 
+/* ===== CARD STYLE SECTION ===== */
 .section {
-  margin-bottom: 40px;
+  background: white;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 650px;
+  transition: 0.3s ease;
 }
 
+.section:hover {
+  transform: translateY(-3px);
+}
+
+/* ===== FORMS ===== */
 form {
   display: flex;
   flex-direction: column;
-  max-width: 400px;
 }
 
 form label {
-  margin-top: 10px;
+  margin-top: 15px;
+  font-weight: 600;
 }
 
 form input,
-form select,
-form button {
-  padding: 8px;
-  margin-top: 5px;
+form select {
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: 0.2s;
 }
 
+form input:focus,
+form select:focus {
+  border-color: #0d4c8b;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(13,76,139,0.15);
+}
+
+/* ===== BUTTON ===== */
 button {
+  margin-top: 25px;
+  padding: 12px;
+  border-radius: 10px;
   background-color: #072b50;
   color: white;
+  font-weight: 600;
   border: none;
   cursor: pointer;
-  margin-top: 20px;
+  transition: 0.3s ease;
 }
 
 button:hover {
-  background-color: #2980b9;
+  background-color: #0d4c8b;
+  transform: scale(1.02);
 }
 
+/* ===== TABLE ===== */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 25px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-table,
-th,
-td {
-  border: 1px solid #ddd;
+th {
+  background-color: #072b50;
+  color: white;
+  font-weight: 600;
 }
 
-th,
-td {
-  padding: 10px;
+th, td {
+  padding: 12px;
   text-align: center;
 }
 
+tbody tr:nth-child(even) {
+  background-color: #f2f6fc;
+}
+
+tbody tr:hover {
+  background-color: #e6f0ff;
+}
+
+/* ===== ABNORMAL ROW ===== */
 .abnormal {
-  background-color: #ff0000;
+  background-color: #ff4d4d !important;
   color: white;
+  font-weight: bold;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .section {
+    padding: 20px;
+  }
+
+  table {
+    font-size: 14px;
+  }
 }

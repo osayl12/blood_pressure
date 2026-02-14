@@ -1,9 +1,11 @@
 async function GetMonthlySummary(req, res, next) {
   let month = req.query.month;
-  if (!month) {
+
+  if (!month || !/^\d{4}-\d{2}$/.test(month)) {
     req.success = false;
     return next();
   }
+
   let startDate = `${month}-01`;
   let dateObj = new Date(startDate);
   dateObj.setMonth(dateObj.getMonth() + 1);
@@ -15,9 +17,13 @@ async function GetMonthlySummary(req, res, next) {
     const [users] = await promisePool.query(`SELECT * FROM users`);
     let summary = await Promise.all(
       users.map(async (user) => {
-        const [measurements] = await promisePool.query(
-          `SELECT * FROM measurements WHERE user_id = ${user.id} AND measurement_date BETWEEN '${startDate}' AND '${endDate}'`,
+        const [measurements] = await promisePool.execute(
+          `SELECT * FROM measurements 
+   WHERE user_id = ? 
+   AND measurement_date BETWEEN ? AND ?`,
+          [user.id, startDate, endDate],
         );
+
         if (measurements.length === 0) {
           return {
             user: user.name,

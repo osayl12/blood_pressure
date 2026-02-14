@@ -122,6 +122,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     table.appendChild(tbody);
     container.appendChild(table);
+
+    const canvas = document.createElement("canvas");
+    container.appendChild(canvas);
+
+    new Chart(canvas, {
+      type: "line",
+      data: {
+        labels: data.measurements.map((m) => m.measurement_date),
+        datasets: [
+          {
+            label: "Systolic",
+            data: data.measurements.map((m) => m.systolic),
+            borderWidth: 2,
+          },
+        ],
+      },
+    });
   }
 
   //טופס סיכום חודשי
