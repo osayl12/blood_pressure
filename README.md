@@ -130,4 +130,6 @@ http://localhost:7291
 
 ------------------------------------------------------------------------
 
-Author: osayl
+## License
+
+For educational use.
