@@ -16,15 +16,32 @@ summaries
 
 ------------------------------------------------------------------------
 
-## 🗂️ Project Structure
-
-Blood_Pressure/ │ ├── Middleware/ │ ├── Users_Mid.js │ ├──
-Measurements_Mid.js │ └── Summary_Mid.js │ ├── Routers/ │ ├── Users_R.js
-│ ├── Measurements_R.js │ └── Summary_R.js │ ├── public/ │ ├──
-index.html │ ├── script.js │ └── style.css │ ├── database.js ├──
-gen_params.js ├── index.js ├── swaggerConfig.js ├──
-blood_pressure_tracker.sql ├── package.json ├── Dockerfile ├──
-docker-compose.yml └── README.md
+Blood_Pressure/
+│
+├── Middleware/
+│   ├── Users_Mid.js
+│   ├── Measurements_Mid.js
+│   └── Summary_Mid.js
+│
+├── Routers/
+│   ├── Users_R.js
+│   ├── Measurements_R.js
+│   └── Summary_R.js
+│
+├── public/
+│   ├── index.html
+│   ├── script.js
+│   └── style.css
+│
+├── database.js
+├── gen_params.js
+├── index.js
+├── swaggerConfig.js
+├── blood_pressure_tracker.sql
+├── package.json
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
 
 ------------------------------------------------------------------------
 
