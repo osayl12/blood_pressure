@@ -78,13 +78,14 @@ NOT inside Middleware/ NOT inside Routers/ NOT inside public/
 
 ------------------------------------------------------------------------
 
-### Example Dockerfile
+### Dockerfile
 
-FROM node:18
+FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package\*.json ./ RUN npm install
+COPY package\*.json ./
+RUN npm install
 
 COPY . .
 
@@ -94,11 +95,11 @@ CMD \["node", "index.js"\]
 
 ------------------------------------------------------------------------
 
-### Example docker-compose.yml
+###  docker-compose.yml
 
 version: '3.8'
 
-services: app: build: . ports: - "7291:7291" depends_on: - db
+services: app: build: . ports: - "8082:7291" depends_on: - db
 environment: - HOST=db - USER=root - PASSWORD=root -
 DATABASE=blood_pressure_tracker
 
@@ -119,6 +120,14 @@ http://localhost:7291
 
 ------------------------------------------------------------------------
 
+##  🌍 Live Website
+
+🔗 https://pressurecheck.duckdns.org/
+
+Hosted on: - Oracle Cloud (Ubuntu VM) - DuckDNS subdomain - Docker +
+Nginx
+------------------------------------------------------------------------
+
 ## 📘 API Endpoints
 
 ### Users
@@ -137,6 +146,14 @@ http://localhost:7291
 
 -   GET /summary/monthly?month=YYYY-MM
 
+------------------------------------------------------------------------
+
+## ☁ Infrastructure
+
+- Cloud Provider: Oracle Cloud
+- VM OS: Ubuntu
+- Deployment via SSH from GitHub Actions
+  
 ------------------------------------------------------------------------
 
 ## 📌 Notes
