@@ -1,5 +1,5 @@
 async function AddUser(req, res, next) {
-  let user_name = addSlashes(req.body.name);
+  let user_name = req.body.name;
   const Query = `INSERT INTO users (name) VALUES(?)`;
   const promisePool = global.db_pool.promise();
   try {
@@ -29,7 +29,7 @@ async function ReadUsers(req, res, next) {
 
 async function UpdateUser(req, res, next) {
   let id = parseInt(req.body.id);
-  let name = addSlashes(req.body.name);
+  let name = req.body.name;
   const Query = `UPDATE users SET name = ? WHERE id = ?`;
   const promisePool = global.db_pool.promise();
   try {

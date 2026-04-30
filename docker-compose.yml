@@ -9,11 +9,11 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: blood_pressure_tracker
       MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
-      - ./blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
 
   node:
     image: osayl1997/pressurecheck:latest
@@ -23,8 +23,8 @@ services:
       - "8082:7291"
     environment:
       DB_HOST: mysql
-      DB_USER: appuser
-      DB_PASSWORD: apppassword
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_NAME: blood_pressure_tracker
       SWAGGER_SERVER: http://localhost:8082
     depends_on:

@@ -5,8 +5,11 @@ async function AddMeasurement(req, res, next) {
     !userId ||
     isNaN(userId) ||
     !systolic ||
+    isNaN(systolic) ||
     !diastolic ||
+    isNaN(diastolic) ||
     !pulse ||
+    isNaN(pulse) ||
     !measurementDate
   ) {
     req.success = false;

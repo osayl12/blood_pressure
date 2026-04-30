@@ -22,18 +22,28 @@ app.use(
         scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
         styleSrc: ["'self'", "'unsafe-inline'"],
         imgSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "https://cdn.jsdelivr.net"],
+        connectSrc: ["'self'"],
       },
     },
   }),
 );
 
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : [];
+
+app.use(
+  cors({
+    origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+    optionsSuccessStatus: 200,
+  }),
+);
 
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(express.static("public"));
+
 // ================= SWAGGER =================
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -41,15 +51,13 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 let db_M = require("./database");
 global.db_pool = db_M.pool;
 
-// ================= VIEW ENGINE =================
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "/views"));
-
 // ================= GLOBAL HELPERS =================
 global.htmlspecialchars = require("htmlspecialchars");
-const { addSlashes, stripSlashes } = require("slashes");
-global.addSlashes = addSlashes;
-global.stripSlashes = stripSlashes;
+
+// ================= HEALTH CHECK =================
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
 // ================= ROUTERS =================
 const Users_R = require("./Routers/Users_R");
@@ -60,6 +68,11 @@ app.use("/measurements", Measurements_R);
 
 const Summary_R = require("./Routers/Summary_R");
 app.use("/summary", Summary_R);
+
+// ================= 404 HANDLER =================
+app.use((req, res) => {
+  res.status(404).json({ error: "Not Found" });
+});
 
 // ================= ERROR HANDLER =================
 app.use((err, req, res, next) => {
