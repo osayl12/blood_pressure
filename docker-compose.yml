@@ -6,16 +6,14 @@ services:
     container_name: pressure-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: blood_pressure_tracker
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3307:3306"
     volumes:
       - ./db/blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,8 +26,8 @@ services:
       - "8082:7291"
     environment:
       DB_HOST: mysql
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_USER: root
+      DB_PASSWORD: ""
       DB_NAME: blood_pressure_tracker
       SWAGGER_SERVER: http://localhost:8082
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
