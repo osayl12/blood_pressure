@@ -14,6 +14,11 @@ services:
       - "3307:3306"
     volumes:
       - ./db/blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   node:
     image: osayl1997/pressurecheck:latest
@@ -27,5 +32,7 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD}
       DB_NAME: blood_pressure_tracker
       SWAGGER_SERVER: http://localhost:8082
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
