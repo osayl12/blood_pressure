@@ -21,7 +21,7 @@ services:
       retries: 5
 
   node:
-    image: osayl1997/pressurecheck:latest
+    build: .
     container_name: pressure-node
     restart: always
     ports:
