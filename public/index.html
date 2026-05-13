@@ -5,83 +5,145 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Blood Pressure Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <header>
-      <h1>Blood Pressure Monitoring</h1>
-      <nav>
-        <ul>
-          <li><a href="#" id="nav-enter">Enter Measurement</a></li>
-          <li><a href="#" id="nav-history">Measurement History</a></li>
-          <li><a href="#" id="nav-summary">Monthly Summary</a></li>
-        </ul>
-      </nav>
+      <div class="header-inner">
+        <div class="header-brand">
+          <svg class="heart-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+          <div>
+            <h1>Blood Pressure Tracker</h1>
+            <p class="header-subtitle">Track. Monitor. Stay Healthy.</p>
+          </div>
+        </div>
+        <nav>
+          <ul>
+            <li>
+              <a href="#" id="nav-enter" class="nav-link active">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/></svg>
+                Enter
+              </a>
+            </li>
+            <li>
+              <a href="#" id="nav-history" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                History
+              </a>
+            </li>
+            <li>
+              <a href="#" id="nav-summary" class="nav-link">
+                <svg class="nav-icon" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                Summary
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </header>
 
     <main>
       <!-- Enter Measurement Section -->
       <section id="section-enter" class="section">
-        <h2>Enter Measurement</h2>
+        <div class="section-header">
+          <h2>Enter Measurement</h2>
+          <p class="section-desc">Record a new blood pressure reading</p>
+        </div>
         <form id="measurementForm">
-          <label for="userSelect">User:</label>
-          <select id="userSelect" name="userId" required>
-            <option value="">Select a user</option>
-          </select>
+          <div class="form-group">
+            <label for="userSelect">Patient</label>
+            <select id="userSelect" name="userId" required>
+              <option value="">Select a patient</option>
+            </select>
+          </div>
 
-          <label for="systolic">Systolic:</label>
-          <input type="number" id="systolic" name="systolic" required />
+          <div class="bp-grid">
+            <div class="form-group">
+              <label for="systolic">Systolic <span class="unit">mmHg</span></label>
+              <input type="number" id="systolic" name="systolic" placeholder="120" min="60" max="250" required />
+            </div>
+            <div class="form-group">
+              <label for="diastolic">Diastolic <span class="unit">mmHg</span></label>
+              <input type="number" id="diastolic" name="diastolic" placeholder="80" min="40" max="150" required />
+            </div>
+            <div class="form-group">
+              <label for="pulse">Pulse <span class="unit">bpm</span></label>
+              <input type="number" id="pulse" name="pulse" placeholder="72" min="30" max="200" required />
+            </div>
+          </div>
 
-          <label for="diastolic">Diastolic:</label>
-          <input type="number" id="diastolic" name="diastolic" required />
+          <div class="form-group">
+            <label for="measurementDate">Measurement Date</label>
+            <input type="date" id="measurementDate" name="measurementDate" required />
+          </div>
 
-          <label for="pulse">Pulse:</label>
-          <input type="number" id="pulse" name="pulse" required />
-
-          <label for="measurementDate">Measurement Date:</label>
-          <input
-            type="date"
-            id="measurementDate"
-            name="measurementDate"
-            required
-          />
-
-          <button type="submit">Submit Measurement</button>
+          <button type="submit" class="btn-primary">Save Measurement</button>
         </form>
         <div id="measurementResult"></div>
       </section>
 
       <!-- Measurement History Section -->
       <section id="section-history" class="section" style="display: none">
-        <h2>Measurement History</h2>
+        <div class="section-header">
+          <h2>Measurement History</h2>
+          <p class="section-desc">View readings over a selected date range</p>
+        </div>
         <form id="historyForm">
-          <label for="historyUserSelect">User:</label>
-          <select id="historyUserSelect" name="userId" required>
-            <option value="">Select a user</option>
-          </select>
+          <div class="form-group">
+            <label for="historyUserSelect">Patient</label>
+            <select id="historyUserSelect" name="userId" required>
+              <option value="">Select a patient</option>
+            </select>
+          </div>
 
-          <label for="startDate">Start Date:</label>
-          <input type="date" id="startDate" name="start" required />
+          <div class="date-grid">
+            <div class="form-group">
+              <label for="startDate">From</label>
+              <input type="date" id="startDate" name="start" required />
+            </div>
+            <div class="form-group">
+              <label for="endDate">To</label>
+              <input type="date" id="endDate" name="end" required />
+            </div>
+          </div>
 
-          <label for="endDate">End Date:</label>
-          <input type="date" id="endDate" name="end" required />
-
-          <button type="submit">Get History</button>
+          <button type="submit" class="btn-primary">View History</button>
         </form>
         <div id="historyResult"></div>
       </section>
 
       <!-- Monthly Summary Section -->
       <section id="section-summary" class="section" style="display: none">
-        <h2>Monthly Summary</h2>
+        <div class="section-header">
+          <h2>Monthly Summary</h2>
+          <p class="section-desc">Aggregate statistics for all patients</p>
+        </div>
         <form id="summaryForm">
-          <label for="monthInput">Month (YYYY-MM):</label>
-          <input type="month" id="monthInput" name="month" required />
-          <button type="submit">Get Summary</button>
+          <div class="form-group">
+            <label for="monthInput">Select Month</label>
+            <input type="month" id="monthInput" name="month" required />
+          </div>
+          <button type="submit" class="btn-primary">Generate Summary</button>
         </form>
         <div id="summaryResult"></div>
       </section>
     </main>
+
+    <footer>
+      <div class="bp-legend">
+        <span class="legend-title">BP Classification:</span>
+        <span class="legend-item legend-normal">Normal &lt;120/80</span>
+        <span class="legend-item legend-elevated">Elevated 120–129</span>
+        <span class="legend-item legend-stage1">Stage 1 &nbsp;130–139/80–89</span>
+        <span class="legend-item legend-stage2">Stage 2 &nbsp;≥140/≥90</span>
+      </div>
+    </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>
   </body>
