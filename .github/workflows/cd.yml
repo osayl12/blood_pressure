@@ -23,5 +23,6 @@ jobs:
             cd /var/www/pressurecheck
             git pull
             docker rm -f pressure-mysql pressure-node 2>/dev/null || true
+            docker ps -q --filter "publish=8082" | xargs -r docker rm -f 2>/dev/null || true
             docker compose down --remove-orphans
             docker compose up --build -d
