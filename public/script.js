@@ -266,7 +266,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("/users/list");
       const result   = await response.json();
       const select   = document.getElementById(selectId);
-      const users    = result.data || result;
+      const users    = Array.isArray(result.data) ? result.data
+                     : Array.isArray(result)      ? result
+                     : [];
+      if (users.length === 0) {
+        const opt  = document.createElement("option");
+        opt.value  = "";
+        opt.text   = "No patients found";
+        opt.disabled = true;
+        select.appendChild(opt);
+        return;
+      }
       users.forEach((user) => {
         const option   = document.createElement("option");
         option.value   = user.id;
@@ -274,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
         select.appendChild(option);
       });
     } catch (err) {
-      console.error(err);
+      console.error("Could not load users:", err);
     }
   }
 });
