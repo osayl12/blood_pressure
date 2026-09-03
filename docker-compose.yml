@@ -1,15 +1,24 @@
+# Production deployment lives on the Oracle VM at /var/www/blood_pressure
+#
+# TLS and HTTP routing are handled by the shared Caddy container (from the
+# CarConnect stack), which attaches to the pressurecheck_default network
+# defined below and reverse-proxies:
+#     pressurecheck.duckdns.org  ->  pressure-node:7291
+# Nothing here is exposed to the internet directly; the host firewall only
+# allows 22/80/443. The published ports below are for local debugging on the VM.
 services:
   mysql:
     image: mysql:8.0
     container_name: pressure-mysql
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: blood_pressure_tracker
     ports:
       - "3307:3306"
     volumes:
-      - ./db/blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql
+      - ./db/blood_pressure_tracker.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root"]
       interval: 10s
@@ -19,7 +28,7 @@ services:
   node:
     build: .
     container_name: pressure-node
-    restart: always
+    restart: unless-stopped
     ports:
       - "8082:7291"
     environment:
@@ -27,8 +36,23 @@ services:
       DB_USER: root
       DB_PASSWORD: ""
       DB_NAME: blood_pressure_tracker
-      SWAGGER_SERVER: http://localhost:8082
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      SWAGGER_SERVER: https://pressurecheck.duckdns.org
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-https://pressurecheck.duckdns.org}
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:7291/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     depends_on:
       mysql:
         condition: service_healthy
+
+volumes:
+  db_data:
+
+# Owned by this stack; the shared Caddy container joins it as an external
+# network (see CarConnect's docker-compose.prod.yml).
+networks:
+  default:
+    name: pressurecheck_default

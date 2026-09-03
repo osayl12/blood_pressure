@@ -20,7 +20,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           command_timeout: 5m
           script: |
-            cd /var/www/pressurecheck
+            cd /var/www/blood_pressure
             git pull
             docker rm -f pressure-mysql pressure-node 2>/dev/null || true
             docker ps -q --filter "publish=8082" | xargs -r docker rm -f 2>/dev/null || true

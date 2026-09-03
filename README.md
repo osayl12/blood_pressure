@@ -97,14 +97,11 @@ CMD \["node", "index.js"\]
 
 ###  docker-compose.yml
 
-version: '3.8'
+See `docker-compose.yml` in the repo root. It runs two containers:
 
-services: app: build: . ports: - "8082:7291" depends_on: - db
-environment: - HOST=db - USER=root - PASSWORD=root -
-DATABASE=blood_pressure_tracker
-
-db: image: mysql:8 restart: always environment: MYSQL_ROOT_PASSWORD:
-root MYSQL_DATABASE: blood_pressure_tracker ports: - "3306:3306"
+- `pressure-node` – the Express app (container port 7291, published on 8082)
+- `pressure-mysql` – MySQL 8, data persisted in the `db_data` volume,
+  schema seeded from `db/blood_pressure_tracker.sql` on first boot
 
 ------------------------------------------------------------------------
 
@@ -112,11 +109,11 @@ root MYSQL_DATABASE: blood_pressure_tracker ports: - "3306:3306"
 
 Build and run:
 
-docker-compose up --build
+docker compose up --build
 
 Then open:
 
-http://localhost:7291
+http://localhost:8082
 
 ------------------------------------------------------------------------
 
@@ -124,8 +121,16 @@ http://localhost:7291
 
 🔗 https://pressurecheck.duckdns.org/
 
-Hosted on: - Oracle Cloud (Ubuntu VM) - DuckDNS subdomain - Docker +
-Nginx
+Hosted on:
+
+- Oracle Cloud (Ubuntu 22.04 VM), deploy dir `/var/www/blood_pressure`
+- DuckDNS subdomain
+- Docker Compose for the app + DB
+- A shared Caddy container (part of the CarConnect stack) terminates TLS
+  and reverse-proxies `pressurecheck.duckdns.org` to `pressure-node:7291`
+  over the `pressurecheck_default` Docker network. Caddy obtains and
+  renews the Let's Encrypt certificate automatically.
+
 ------------------------------------------------------------------------
 
 ## 📘 API Endpoints
