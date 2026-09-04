@@ -3,6 +3,7 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const session = require("express-session");
 const path = require("path");
 
 const swaggerUi = require("swagger-ui-express");
@@ -10,8 +11,18 @@ const swaggerSpec = require("./swaggerConfig");
 
 const port = 7291;
 
+if (!process.env.APP_PASSWORD) {
+  console.error("FATAL: APP_PASSWORD is not set. Refusing to start.");
+  process.exit(1);
+}
+if (!process.env.SESSION_SECRET) {
+  console.error("FATAL: SESSION_SECRET is not set. Refusing to start.");
+  process.exit(1);
+}
+
 // ================= APP INIT =================
 const app = express();
+app.set("trust proxy", 1);
 
 // ================= MIDDLEWARE =================
 app.use(
@@ -43,6 +54,21 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(
+  session({
+    name: "bp.sid",
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    },
+  }),
+);
+
 app.use(express.static("public"));
 
 // ================= SWAGGER =================
@@ -52,23 +78,25 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 let db_M = require("./database");
 global.db_pool = db_M.pool;
 
-// ================= GLOBAL HELPERS =================
-global.htmlspecialchars = require("htmlspecialchars");
-
 // ================= HEALTH CHECK =================
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+// ================= AUTH =================
+const authMid = require("./Middleware/Auth_Mid");
+const Auth_R = require("./Routers/Auth_R");
+app.use("/auth", Auth_R);
+
 // ================= ROUTERS =================
 const Users_R = require("./Routers/Users_R");
-app.use("/users", Users_R);
+app.use("/users", authMid.requireAuth, Users_R);
 
 const Measurements_R = require("./Routers/Measurements_R");
-app.use("/measurements", Measurements_R);
+app.use("/measurements", authMid.requireAuth, Measurements_R);
 
 const Summary_R = require("./Routers/Summary_R");
-app.use("/summary", Summary_R);
+app.use("/summary", authMid.requireAuth, Summary_R);
 
 // ================= 404 HANDLER =================
 app.use((req, res) => {

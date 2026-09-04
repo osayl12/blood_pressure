@@ -1,5 +1,16 @@
+function normalizeName(rawName) {
+  if (typeof rawName !== "string") return null;
+  const name = rawName.trim();
+  if (!name || name.length > 100) return null;
+  return name;
+}
+
 async function AddUser(req, res, next) {
-  let user_name = req.body.name;
+  let user_name = normalizeName(req.body.name);
+  if (!user_name) {
+    req.success = false;
+    return next();
+  }
   const Query = `INSERT INTO users (name) VALUES(?)`;
   const promisePool = global.db_pool.promise();
   try {
@@ -29,7 +40,11 @@ async function ReadUsers(req, res, next) {
 
 async function UpdateUser(req, res, next) {
   let id = parseInt(req.body.id);
-  let name = req.body.name;
+  let name = normalizeName(req.body.name);
+  if (!id || isNaN(id) || !name) {
+    req.success = false;
+    return next();
+  }
   const Query = `UPDATE users SET name = ? WHERE id = ?`;
   const promisePool = global.db_pool.promise();
   try {
@@ -44,6 +59,10 @@ async function UpdateUser(req, res, next) {
 
 async function DeleteUser(req, res, next) {
   let id = parseInt(req.body.id);
+  if (!id || isNaN(id)) {
+    req.success = false;
+    return next();
+  }
   const Query = `DELETE FROM users WHERE id = ?`;
   const promisePool = global.db_pool.promise();
   try {

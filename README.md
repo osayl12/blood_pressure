@@ -57,11 +57,23 @@ Blood_Pressure/
 
 1.  Install dependencies: npm install
 
-2.  Start the server: node index.js
+2.  Copy .env.example to .env and set APP_PASSWORD and SESSION_SECRET
+    (the server refuses to start without them)
 
-3.  Open browser: http://localhost:7291
+3.  Start the server: node index.js
+
+4.  Open browser: http://localhost:7291 and sign in with APP_PASSWORD
 
 Swagger documentation: http://localhost:7291/api-docs
+
+------------------------------------------------------------------------
+
+## 🔐 Authentication
+
+The whole app sits behind a single shared password (`APP_PASSWORD`) —
+`GET /users/list`, `/measurements/*`, and `/summary/*` all require an
+authenticated session (`POST /auth/login`). There's no per-user login;
+anyone with the password can see and edit all patients' data.
 
 ------------------------------------------------------------------------
 
