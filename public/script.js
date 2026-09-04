@@ -111,6 +111,76 @@ document.addEventListener("DOMContentLoaded", async () => {
   populateUsers("userSelect");
   populateUsers("historyUserSelect");
 
+  // ── Add patient ─────────────────────────────────────────────────────────────
+  const addPatientToggle = document.getElementById("addPatientToggle");
+  const addPatientPanel  = document.getElementById("addPatientPanel");
+  const addPatientCancel = document.getElementById("addPatientCancel");
+  const addPatientSubmit = document.getElementById("addPatientSubmit");
+  const newPatientName   = document.getElementById("newPatientName");
+  const addPatientError  = document.getElementById("addPatientError");
+
+  function showAddPatientError(message) {
+    addPatientError.textContent = message;
+    addPatientError.hidden = false;
+  }
+
+  function openAddPatientPanel() {
+    addPatientError.hidden = true;
+    addPatientPanel.hidden = false;
+    newPatientName.focus();
+  }
+
+  function closeAddPatientPanel() {
+    addPatientPanel.hidden = true;
+    newPatientName.value = "";
+    addPatientError.hidden = true;
+  }
+
+  addPatientToggle.addEventListener("click", () => {
+    if (addPatientPanel.hidden) openAddPatientPanel();
+    else closeAddPatientPanel();
+  });
+
+  addPatientCancel.addEventListener("click", closeAddPatientPanel);
+
+  async function submitNewPatient() {
+    const name = newPatientName.value.trim();
+    if (!name) {
+      showAddPatientError("Enter a name.");
+      return;
+    }
+    try {
+      const response = await fetch("/users/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (response.status === 401) {
+        openLoginModal();
+        return;
+      }
+      const result = await response.json();
+      if (result.msg === "ok") {
+        closeAddPatientPanel();
+        await populateUsers("userSelect", result.Last_Id);
+        await populateUsers("historyUserSelect");
+      } else {
+        showAddPatientError("Couldn't add patient. Try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      showAddPatientError("Couldn't add patient. Try again.");
+    }
+  }
+
+  addPatientSubmit.addEventListener("click", submitNewPatient);
+  newPatientName.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitNewPatient();
+    }
+  });
+
   // ── Enter Measurement ──────────────────────────────────────────────────────
   const measurementForm = document.getElementById("measurementForm");
   measurementForm.addEventListener("submit", async (e) => {
@@ -364,7 +434,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // ── Populate user dropdowns ────────────────────────────────────────────────
-  async function populateUsers(selectId) {
+  async function populateUsers(selectId, selectedId) {
     try {
       const response = await fetch("/users/list");
       const result   = await response.json();
@@ -372,20 +442,23 @@ document.addEventListener("DOMContentLoaded", async () => {
       const users    = Array.isArray(result.data) ? result.data
                      : Array.isArray(result)      ? result
                      : [];
-      if (users.length === 0) {
-        const opt  = document.createElement("option");
-        opt.value  = "";
-        opt.text   = "No patients found";
-        opt.disabled = true;
-        select.appendChild(opt);
-        return;
-      }
+
+      select.innerHTML = "";
+
+      const placeholder  = document.createElement("option");
+      placeholder.value  = "";
+      placeholder.text   = users.length === 0 ? "No patients found" : "Select a patient";
+      placeholder.disabled = users.length === 0;
+      select.appendChild(placeholder);
+
       users.forEach((user) => {
         const option   = document.createElement("option");
         option.value   = user.id;
         option.text    = user.name;
         select.appendChild(option);
       });
+
+      if (selectedId != null) select.value = String(selectedId);
     } catch (err) {
       console.error("Could not load users:", err);
     }

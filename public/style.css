@@ -328,6 +328,78 @@ form {
   color: var(--ink-mid);
 }
 
+.patient-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cuff);
+  cursor: pointer;
+}
+
+.link-btn:hover { text-decoration: underline; }
+
+.link-btn:focus-visible {
+  outline: 2px solid var(--cuff);
+  outline-offset: 2px;
+}
+
+.add-patient-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+}
+
+.add-patient-panel[hidden] {
+  display: none;
+}
+
+.add-patient-panel input[type="text"] {
+  flex: 1;
+  min-width: 160px;
+}
+
+.add-patient-panel .msg-error {
+  width: 100%;
+  margin: 0;
+}
+
+.btn-secondary {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  background: transparent;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-secondary:hover { background: var(--ink); color: var(--paper); }
+
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--cuff);
+  outline-offset: 2px;
+}
+
 form input,
 form select {
   padding: 11px 14px;

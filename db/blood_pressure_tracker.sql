@@ -89,6 +89,43 @@ ALTER TABLE `users`
 --
 ALTER TABLE `measurements`
   ADD CONSTRAINT `measurements_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+-- --------------------------------------------------------
+--
+-- Demo data (only applied on first boot, i.e. an empty db_data volume)
+--
+
+INSERT INTO `users` (`name`) VALUES
+('Amina Farah'),
+('David Okoye'),
+('Priya Nair'),
+('Sofia Reyes');
+
+INSERT INTO `measurements` (`user_id`, `systolic`, `diastolic`, `pulse`, `measurement_date`) VALUES
+(1, 118, 76, 68, CURDATE() - INTERVAL 28 DAY),
+(1, 122, 79, 71, CURDATE() - INTERVAL 21 DAY),
+(1, 124, 80, 70, CURDATE() - INTERVAL 14 DAY),
+(1, 119, 77, 66, CURDATE() - INTERVAL 7 DAY),
+(1, 121, 78, 69, CURDATE()),
+
+(2, 138, 89, 78, CURDATE() - INTERVAL 28 DAY),
+(2, 145, 92, 81, CURDATE() - INTERVAL 21 DAY),
+(2, 141, 90, 76, CURDATE() - INTERVAL 14 DAY),
+(2, 149, 95, 83, CURDATE() - INTERVAL 7 DAY),
+(2, 143, 91, 79, CURDATE()),
+
+(3, 112, 72, 62, CURDATE() - INTERVAL 28 DAY),
+(3, 115, 74, 64, CURDATE() - INTERVAL 21 DAY),
+(3, 110, 70, 60, CURDATE() - INTERVAL 14 DAY),
+(3, 114, 73, 63, CURDATE() - INTERVAL 7 DAY),
+(3, 113, 71, 61, CURDATE()),
+
+(4, 126, 81, 74, CURDATE() - INTERVAL 28 DAY),
+(4, 131, 84, 77, CURDATE() - INTERVAL 21 DAY),
+(4, 128, 82, 75, CURDATE() - INTERVAL 14 DAY),
+(4, 133, 85, 79, CURDATE() - INTERVAL 7 DAY),
+(4, 129, 83, 76, CURDATE());
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

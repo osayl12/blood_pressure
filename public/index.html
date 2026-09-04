@@ -77,10 +77,19 @@
           </div>
           <form id="measurementForm">
             <div class="form-group">
-              <label for="userSelect">Patient</label>
+              <div class="patient-row">
+                <label for="userSelect">Patient</label>
+                <button type="button" id="addPatientToggle" class="link-btn">+ Add patient</button>
+              </div>
               <select id="userSelect" name="userId" required>
                 <option value="">Select a patient</option>
               </select>
+              <div id="addPatientPanel" class="add-patient-panel" hidden>
+                <input type="text" id="newPatientName" placeholder="Patient name" maxlength="100" autocomplete="off" />
+                <button type="button" id="addPatientSubmit" class="btn-secondary">Add</button>
+                <button type="button" id="addPatientCancel" class="link-btn">Cancel</button>
+                <p id="addPatientError" class="msg-error" hidden></p>
+              </div>
             </div>
 
             <div class="reading-group">
