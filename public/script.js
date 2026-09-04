@@ -1,4 +1,76 @@
-document.addEventListener("DOMContentLoaded", () => {
+const HTML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (c) => HTML_ESCAPES[c]);
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const loginGate = document.getElementById("loginGate");
+  const appRoot = document.getElementById("appRoot");
+  const loginForm = document.getElementById("loginForm");
+  const loginError = document.getElementById("loginError");
+
+  function showLoginError(message) {
+    loginError.textContent = message;
+    loginError.hidden = false;
+  }
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginError.hidden = true;
+    const password = document.getElementById("loginPassword").value;
+    try {
+      const response = await fetch("/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (response.ok) {
+        location.reload();
+      } else {
+        showLoginError("Incorrect password.");
+      }
+    } catch (err) {
+      console.error(err);
+      showLoginError("Couldn't sign in. Try again.");
+    }
+  });
+
+  let authenticated = false;
+  try {
+    const response = await fetch("/auth/status");
+    const data = await response.json();
+    authenticated = !!data.authenticated;
+  } catch (err) {
+    console.error(err);
+  }
+
+  if (!authenticated) {
+    appRoot.hidden = true;
+    loginGate.hidden = false;
+    document.getElementById("loginPassword").focus();
+    return;
+  }
+
+  loginGate.hidden = true;
+  appRoot.hidden = false;
+
+  document.getElementById("signOutBtn").addEventListener("click", async () => {
+    try {
+      await fetch("/auth/logout", { method: "POST" });
+    } catch (err) {
+      console.error(err);
+    }
+    location.reload();
+  });
+
+  function sessionExpired(response) {
+    if (response.status === 401) {
+      location.reload();
+      return true;
+    }
+    return false;
+  }
+
   const navEnter   = document.getElementById("nav-enter");
   const navHistory = document.getElementById("nav-history");
   const navSummary = document.getElementById("nav-summary");
@@ -7,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const sectionHistory = document.getElementById("section-history");
   const sectionSummary = document.getElementById("section-summary");
 
-  const navLinks = document.querySelectorAll(".nav-link");
+  const navLinks = document.querySelectorAll(".tab");
 
   function showSection(section) {
     sectionEnter.style.display   = section === "enter"   ? "block" : "none";
@@ -43,16 +115,17 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, systolic, diastolic, pulse, measurementDate }),
       });
+      if (sessionExpired(response)) return;
       const result = await response.json();
       if (result.msg === "ok") {
-        resultEl.innerHTML = `<div class="msg-success">✓ Measurement saved successfully!</div>`;
+        resultEl.innerHTML = `<div class="msg-success">Reading saved.</div>`;
         measurementForm.reset();
       } else {
-        resultEl.innerHTML = `<div class="msg-error">✗ Failed to save measurement. Please try again.</div>`;
+        resultEl.innerHTML = `<div class="msg-error">Couldn't save the reading. Try again.</div>`;
       }
     } catch (err) {
       console.error(err);
-      resultEl.innerHTML = `<div class="msg-error">✗ Failed to save measurement. Please try again.</div>`;
+      resultEl.innerHTML = `<div class="msg-error">Couldn't save the reading. Try again.</div>`;
     }
   });
 
@@ -66,12 +139,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       const response = await fetch(`/measurements/history/${userId}?start=${start}&end=${end}`);
+      if (sessionExpired(response)) return;
       const result   = await response.json();
       displayHistory(result);
     } catch (err) {
       console.error(err);
       document.getElementById("historyResult").innerHTML =
-        `<div class="msg-error">✗ Error fetching history.</div>`;
+        `<div class="msg-error">Couldn't load history. Try again.</div>`;
     }
   });
 
@@ -94,8 +168,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const statsBar = document.createElement("div");
     statsBar.className = "stats-bar";
     statsBar.innerHTML = `
-      <span class="stat-chip">Avg Systolic: ${avg} mmHg</span>
-      <span class="stat-chip">${data.measurements.length} reading${data.measurements.length !== 1 ? "s" : ""}</span>
+      <span class="stat-chip">
+        <span class="stat-value">${avg}</span>
+        <span class="stat-label">avg systolic, mmHg</span>
+      </span>
+      <span class="stat-chip">
+        <span class="stat-value">${data.measurements.length}</span>
+        <span class="stat-label">reading${data.measurements.length !== 1 ? "s" : ""}</span>
+      </span>
     `;
     container.appendChild(statsBar);
 
@@ -142,31 +222,31 @@ document.addEventListener("DOMContentLoaded", () => {
         labels,
         datasets: [
           {
-            label: "Systolic (mmHg)",
+            label: "Systolic",
             data: data.measurements.map((m) => m.systolic),
-            borderColor: "#c62828",
-            backgroundColor: "rgba(198,40,40,0.08)",
+            borderColor: "#b0353c",
+            backgroundColor: "rgba(176,53,60,0.07)",
             borderWidth: 2.5,
-            pointBackgroundColor: "#c62828",
+            pointBackgroundColor: "#b0353c",
             pointBorderColor: "#fff",
             pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            tension: 0.35,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            tension: 0.3,
             fill: true,
           },
           {
-            label: "Diastolic (mmHg)",
+            label: "Diastolic",
             data: data.measurements.map((m) => m.diastolic),
-            borderColor: "#1565c0",
-            backgroundColor: "rgba(21,101,192,0.05)",
+            borderColor: "#33586c",
+            backgroundColor: "rgba(51,88,108,0.05)",
             borderWidth: 2,
-            pointBackgroundColor: "#1565c0",
+            pointBackgroundColor: "#33586c",
             pointBorderColor: "#fff",
             pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            tension: 0.35,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            tension: 0.3,
             fill: true,
           },
         ],
@@ -177,12 +257,19 @@ document.addEventListener("DOMContentLoaded", () => {
         plugins: {
           legend: {
             position: "top",
-            labels: { font: { size: 13, family: "Inter, sans-serif" }, usePointStyle: true, padding: 16 },
+            align: "start",
+            labels: {
+              font: { size: 13, family: "'IBM Plex Sans', sans-serif" },
+              color: "#4b5957",
+              usePointStyle: true,
+              boxWidth: 8,
+              padding: 18,
+            },
           },
           tooltip: {
-            backgroundColor: "#1a202c",
-            titleFont: { size: 13 },
-            bodyFont: { size: 13 },
+            backgroundColor: "#1c2b2a",
+            titleFont: { size: 13, family: "'IBM Plex Sans', sans-serif" },
+            bodyFont: { size: 13, family: "'IBM Plex Mono', monospace" },
             padding: 10,
             callbacks: {
               label: (ctx) => `  ${ctx.dataset.label}: ${ctx.parsed.y} mmHg`,
@@ -192,13 +279,13 @@ document.addEventListener("DOMContentLoaded", () => {
         scales: {
           y: {
             min: 40,
-            grid: { color: "rgba(0,0,0,0.05)" },
-            ticks: { font: { size: 12 } },
-            title: { display: true, text: "mmHg", font: { size: 12 } },
+            grid: { color: "rgba(28,43,42,0.07)" },
+            ticks: { font: { size: 12, family: "'IBM Plex Mono', monospace" }, color: "#78847f" },
+            title: { display: true, text: "mmHg", font: { size: 12, family: "'IBM Plex Sans', sans-serif" }, color: "#78847f" },
           },
           x: {
             grid: { display: false },
-            ticks: { font: { size: 12 }, maxRotation: 30 },
+            ticks: { font: { size: 11, family: "'IBM Plex Mono', monospace" }, color: "#78847f", maxRotation: 30 },
           },
         },
       },
@@ -212,12 +299,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const month = document.getElementById("monthInput").value;
     try {
       const response = await fetch(`/summary/monthly?month=${month}`);
+      if (sessionExpired(response)) return;
       const result   = await response.json();
       displaySummary(result);
     } catch (err) {
       console.error(err);
       document.getElementById("summaryResult").innerHTML =
-        `<div class="msg-error">✗ Error fetching summary.</div>`;
+        `<div class="msg-error">Couldn't load the summary. Try again.</div>`;
     }
   });
 
@@ -249,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
           ? `<span class="badge badge-abnormal">${item.abnormalCount}</span>`
           : `<span class="badge badge-normal">0</span>`;
       tr.innerHTML = `
-        <td>${item.user}</td>
+        <td>${escapeHtml(item.user)}</td>
         <td>${item.avgSystolic  !== null ? item.avgSystolic.toFixed(1)  : "—"}</td>
         <td>${item.avgDiastolic !== null ? item.avgDiastolic.toFixed(1) : "—"}</td>
         <td>${item.avgPulse     !== null ? item.avgPulse.toFixed(1)     : "—"}</td>
@@ -264,6 +352,7 @@ document.addEventListener("DOMContentLoaded", () => {
   async function populateUsers(selectId) {
     try {
       const response = await fetch("/users/list");
+      if (sessionExpired(response)) return;
       const result   = await response.json();
       const select   = document.getElementById(selectId);
       const users    = Array.isArray(result.data) ? result.data
