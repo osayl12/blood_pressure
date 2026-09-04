@@ -62,7 +62,7 @@ Blood_Pressure/
 
 3.  Start the server: node index.js
 
-4.  Open browser: http://localhost:7291 and sign in with APP_PASSWORD
+4.  Open browser: http://localhost:7291 — the app is viewable right away
 
 Swagger documentation: http://localhost:7291/api-docs
 
@@ -70,10 +70,12 @@ Swagger documentation: http://localhost:7291/api-docs
 
 ## 🔐 Authentication
 
-The whole app sits behind a single shared password (`APP_PASSWORD`) —
-`GET /users/list`, `/measurements/*`, and `/summary/*` all require an
-authenticated session (`POST /auth/login`). There's no per-user login;
-anyone with the password can see and edit all patients' data.
+Viewing is public — anyone with the URL can see patient names, history,
+and monthly summaries with no login. Writing data (`POST /measurements/add`,
+`POST /users/create`, `PUT /users/update`, `DELETE /users/delete`) requires
+a session, gated by a single shared password (`APP_PASSWORD`, via
+`POST /auth/login`). There's no per-user login — anyone with the password
+can add readings and manage all patients.
 
 ------------------------------------------------------------------------
 
@@ -147,16 +149,24 @@ Hosted on:
 
 ## 📘 API Endpoints
 
+🔒 = requires a signed-in session (`POST /auth/login`)
+
+### Auth
+
+-   POST /auth/login
+-   POST /auth/logout
+-   GET /auth/status
+
 ### Users
 
--   POST /users/create
+-   🔒 POST /users/create
 -   GET /users/list
--   PUT /users/update
--   DELETE /users/delete
+-   🔒 PUT /users/update
+-   🔒 DELETE /users/delete
 
 ### Measurements
 
--   POST /measurements/add
+-   🔒 POST /measurements/add
 -   GET /measurements/history/:userId
 
 ### Summary

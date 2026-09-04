@@ -15,7 +15,9 @@
   </head>
   <body>
     <div id="loginGate" class="login-gate" hidden>
+      <div class="login-backdrop" id="loginBackdrop"></div>
       <form id="loginForm" class="login-form">
+        <button type="button" id="loginClose" class="login-close" aria-label="Close">&times;</button>
         <svg class="brand-mark login-brand-mark" viewBox="0 0 120 40" fill="none" aria-hidden="true">
           <path
             d="M2,29 C6,29 7,10 12,10 C16,10 15,22 19,23 C22,23.8 22.5,17.5 26,17.5 C29.5,17.5 29,24 34,24.6 C39,25.2 41,29 46,29 L58,29 C62,29 63,10 68,10 C72,10 71,22 75,23 C78,23.8 78.5,17.5 82,17.5 C85.5,17.5 85,24 90,24.6 C95,25.2 97,29 102,29 L118,29"
@@ -25,8 +27,8 @@
             stroke-linejoin="round"
           />
         </svg>
-        <h1>Blood Pressure Log</h1>
-        <p class="section-desc">Sign in to view and record readings</p>
+        <h1>Sign in</h1>
+        <p class="section-desc">Needed to save a reading or manage patients</p>
         <div class="form-group">
           <label for="loginPassword">Password</label>
           <input type="password" id="loginPassword" name="password" autocomplete="current-password" required />
@@ -36,7 +38,6 @@
       </form>
     </div>
 
-    <div id="appRoot" hidden>
     <header>
       <div class="header-inner">
         <div class="header-brand">
@@ -55,7 +56,7 @@
             <p class="header-subtitle">Readings, trends and monthly summaries</p>
           </div>
         </div>
-        <button type="button" id="signOutBtn" class="sign-out-btn">Sign out</button>
+        <button type="button" id="authBtn" class="sign-out-btn">Sign in</button>
       </div>
       <nav class="tab-bar">
         <ul>
@@ -198,7 +199,6 @@
         <span class="legend-item"><i class="legend-swatch legend-stage2"></i>Stage 2&nbsp;&nbsp;&ge;140/&ge;90</span>
       </div>
     </footer>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="script.js"></script>

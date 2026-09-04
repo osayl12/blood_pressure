@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userMid = require("../Middleware/Users_Mid");
+const authMid = require("../Middleware/Auth_Mid");
 
 /**
  * @swagger
@@ -34,7 +35,7 @@ const userMid = require("../Middleware/Users_Mid");
  *       500:
  *         description: Error creating user
  */
-router.post("/create", [userMid.AddUser], (req, res) => {
+router.post("/create", [authMid.requireAuth, userMid.AddUser], (req, res) => {
   if (req.success) {
     res.status(200).json({ msg: "ok", Last_Id: req.insertId });
   } else {
@@ -102,7 +103,7 @@ router.get("/list", [userMid.ReadUsers], (req, res) => {
  *       500:
  *         description: Error updating user
  */
-router.put("/update", [userMid.UpdateUser], (req, res) => {
+router.put("/update", [authMid.requireAuth, userMid.UpdateUser], (req, res) => {
   if (req.success) {
     res.status(200).json({ msg: "ok" });
   } else {
@@ -133,7 +134,7 @@ router.put("/update", [userMid.UpdateUser], (req, res) => {
  *       500:
  *         description: Error deleting user
  */
-router.delete("/delete", [userMid.DeleteUser], (req, res) => {
+router.delete("/delete", [authMid.requireAuth, userMid.DeleteUser], (req, res) => {
   if (req.success) {
     res.status(200).json({ msg: "ok" });
   } else {

@@ -84,19 +84,21 @@ app.get("/health", (req, res) => {
 });
 
 // ================= AUTH =================
-const authMid = require("./Middleware/Auth_Mid");
 const Auth_R = require("./Routers/Auth_R");
 app.use("/auth", Auth_R);
 
 // ================= ROUTERS =================
+// Reading data (list/history/summary) is public. Writing data (add/create/
+// update/delete) requires a signed-in session — see the requireAuth calls
+// inside each router.
 const Users_R = require("./Routers/Users_R");
-app.use("/users", authMid.requireAuth, Users_R);
+app.use("/users", Users_R);
 
 const Measurements_R = require("./Routers/Measurements_R");
-app.use("/measurements", authMid.requireAuth, Measurements_R);
+app.use("/measurements", Measurements_R);
 
 const Summary_R = require("./Routers/Summary_R");
-app.use("/summary", authMid.requireAuth, Summary_R);
+app.use("/summary", Summary_R);
 
 // ================= 404 HANDLER =================
 app.use((req, res) => {

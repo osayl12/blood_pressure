@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const measurementMid = require("../Middleware/Measurements_Mid");
+const authMid = require("../Middleware/Auth_Mid");
 
 /**
  * @swagger
@@ -47,7 +48,7 @@ const measurementMid = require("../Middleware/Measurements_Mid");
  *       500:
  *         description: Error adding measurement
  */
-router.post("/add", [measurementMid.AddMeasurement], (req, res) => {
+router.post("/add", [authMid.requireAuth, measurementMid.AddMeasurement], (req, res) => {
   if (req.success) {
     res.status(200).json({ msg: "ok", Last_Id: req.insertId });
   } else {

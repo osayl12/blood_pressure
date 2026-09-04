@@ -51,28 +51,29 @@ body {
 
 a { color: inherit; }
 
-/* === AUTH GATE === */
-#appRoot {
-  display: contents;
-}
-
-#appRoot[hidden] {
-  display: none;
-}
-
+/* === AUTH MODAL === */
 .login-gate {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  position: fixed;
+  inset: 0;
   padding: 20px;
+  z-index: 200;
 }
 
 .login-gate[hidden] {
   display: none;
 }
 
+.login-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(28, 43, 42, 0.45);
+}
+
 .login-form {
+  position: relative;
   width: 100%;
   max-width: 360px;
   background: var(--panel);
@@ -81,6 +82,32 @@ a { color: inherit; }
   padding: 36px 32px;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 12px 40px rgba(28, 43, 42, 0.25);
+}
+
+.login-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--r-sm);
+}
+
+.login-close:hover { color: var(--ink); background: var(--paper); }
+
+.login-close:focus-visible {
+  outline: 2px solid var(--cuff);
+  outline-offset: 2px;
 }
 
 .login-brand-mark {

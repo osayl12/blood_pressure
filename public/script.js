@@ -4,15 +4,40 @@ function escapeHtml(value) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+  // ── Sign-in modal ───────────────────────────────────────────────────────────
   const loginGate = document.getElementById("loginGate");
-  const appRoot = document.getElementById("appRoot");
   const loginForm = document.getElementById("loginForm");
   const loginError = document.getElementById("loginError");
+  const authBtn = document.getElementById("authBtn");
+
+  let authenticated = false;
+
+  function setAuthenticated(value) {
+    authenticated = value;
+    authBtn.textContent = authenticated ? "Sign out" : "Sign in";
+  }
+
+  function openLoginModal() {
+    loginError.hidden = true;
+    loginForm.reset();
+    loginGate.hidden = false;
+    document.getElementById("loginPassword").focus();
+  }
+
+  function closeLoginModal() {
+    loginGate.hidden = true;
+  }
 
   function showLoginError(message) {
     loginError.textContent = message;
     loginError.hidden = false;
   }
+
+  document.getElementById("loginBackdrop").addEventListener("click", closeLoginModal);
+  document.getElementById("loginClose").addEventListener("click", closeLoginModal);
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !loginGate.hidden) closeLoginModal();
+  });
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -25,7 +50,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         body: JSON.stringify({ password }),
       });
       if (response.ok) {
-        location.reload();
+        setAuthenticated(true);
+        closeLoginModal();
       } else {
         showLoginError("Incorrect password.");
       }
@@ -35,42 +61,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  let authenticated = false;
+  authBtn.addEventListener("click", async () => {
+    if (authenticated) {
+      try {
+        await fetch("/auth/logout", { method: "POST" });
+      } catch (err) {
+        console.error(err);
+      }
+      setAuthenticated(false);
+    } else {
+      openLoginModal();
+    }
+  });
+
   try {
     const response = await fetch("/auth/status");
     const data = await response.json();
-    authenticated = !!data.authenticated;
+    setAuthenticated(!!data.authenticated);
   } catch (err) {
     console.error(err);
+    setAuthenticated(false);
   }
 
-  if (!authenticated) {
-    appRoot.hidden = true;
-    loginGate.hidden = false;
-    document.getElementById("loginPassword").focus();
-    return;
-  }
-
-  loginGate.hidden = true;
-  appRoot.hidden = false;
-
-  document.getElementById("signOutBtn").addEventListener("click", async () => {
-    try {
-      await fetch("/auth/logout", { method: "POST" });
-    } catch (err) {
-      console.error(err);
-    }
-    location.reload();
-  });
-
-  function sessionExpired(response) {
-    if (response.status === 401) {
-      location.reload();
-      return true;
-    }
-    return false;
-  }
-
+  // ── App (viewing is public; saving/managing patients requires sign-in) ─────
   const navEnter   = document.getElementById("nav-enter");
   const navHistory = document.getElementById("nav-history");
   const navSummary = document.getElementById("nav-summary");
@@ -115,7 +128,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, systolic, diastolic, pulse, measurementDate }),
       });
-      if (sessionExpired(response)) return;
+      if (response.status === 401) {
+        resultEl.innerHTML = `<div class="msg-error">Sign in to save a reading.</div>`;
+        openLoginModal();
+        return;
+      }
       const result = await response.json();
       if (result.msg === "ok") {
         resultEl.innerHTML = `<div class="msg-success">Reading saved.</div>`;
@@ -139,7 +156,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
       const response = await fetch(`/measurements/history/${userId}?start=${start}&end=${end}`);
-      if (sessionExpired(response)) return;
       const result   = await response.json();
       displayHistory(result);
     } catch (err) {
@@ -299,7 +315,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const month = document.getElementById("monthInput").value;
     try {
       const response = await fetch(`/summary/monthly?month=${month}`);
-      if (sessionExpired(response)) return;
       const result   = await response.json();
       displaySummary(result);
     } catch (err) {
@@ -352,7 +367,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function populateUsers(selectId) {
     try {
       const response = await fetch("/users/list");
-      if (sessionExpired(response)) return;
       const result   = await response.json();
       const select   = document.getElementById(selectId);
       const users    = Array.isArray(result.data) ? result.data
